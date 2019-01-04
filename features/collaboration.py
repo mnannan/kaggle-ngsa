@@ -15,7 +15,7 @@ class CollaborationDistance:
     def __init__(self):
         self.collaboration_graph = None
         self.authors_mapping = None
-        self.shortest_paths_matrix = None
+        self.distances_matrix = None
 
     def fit(self, df):
         pass
@@ -23,12 +23,12 @@ class CollaborationDistance:
     def transform(self, df):
 
         self.collaboration_graph, self.authors_mapping = create_collaboration_graph(df)
-        self.shortest_paths_matrix = extract_shortest_paths_matrix(self.collaboration_graph)
+        self.distances_matrix = extract_distances_matrix(self.collaboration_graph)
         authors_list = \
             df.source_authors_list.apply(lambda x: [x] if x is not None else None) + \
             df.target_authors_list.apply(lambda x: [x] if x is not None else None)
         df['collaboration_distance'] = authors_list.apply(
-            lambda x: extract_shortest_paths(x, self.shortest_paths_matrix, self.authors_mapping)
+            lambda x: extract_distances_series(x, self.distances_matrix, self.authors_mapping)
         )
         # We just keep the author of the paper and target authors
         writer_target_authors_list = \
@@ -37,7 +37,7 @@ class CollaborationDistance:
             ) + \
             df.target_authors_list.apply(lambda x: [x] if x is not None else None)
         df['writer_collaboration_distance'] = writer_target_authors_list.apply(
-            lambda x: extract_shortest_paths(x, self.shortest_paths_matrix, self.authors_mapping)
+            lambda x: extract_distances_series(x, self.distances_matrix, self.authors_mapping)
         )
         return df
 
@@ -162,12 +162,12 @@ def create_collaboration_graph(df: pd.DataFrame) -> Tuple[igraph.Graph, Dict]:
     return igraph.Graph(collaboration_edges), authors_mapping
 
 
-def extract_shortest_paths_matrix(graph: igraph.Graph) -> np.matrix:
-    """Extract shortest paths matrix from igraph.Graph"""
+def extract_distances_matrix(graph: igraph.Graph) -> np.matrix:
+    """Extract distances matrix from igraph.Graph"""
     return np.matrix(graph.shortest_paths())
 
 
-def extract_shortest_paths(
+def extract_distances_series(
         nodes_list: pd.Series, shortest_paths_matrix: np.matrix, nodes_mapping: Dict
 ) -> pd.Series:
     """
