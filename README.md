@@ -6,32 +6,33 @@ This projects aims to solve kaggle competition about predicting whether one pape
 another paper given:
 -   A graph of papers
 -   For each paper:
-        - Title
-        - Publication date
-        - Authors
-        - Abstract
-        - Journal 
+     - Title
+     - Publication date
+     - Authors
+     - Abstract
+     - Journal 
         
 # Installation
 
 ### Requirements 
 
 To install requirements run 
-
+```
 pip install -r requirements.txt
-
+```
 
 ### Data
 
-Download data on https://www.kaggle.com/c/ngsa-w19 and move data in `data` directory.
+Download data on [kaggle competition](https://www.kaggle.com/c/ngsa-w19) and move data in `data` 
+directory.
 
 
 # Features
 
 ## Final
-- `title_overlap`: number of common words in both title (on clean titles)
+- `title_overlap`: number of common words in both titles (on clean titles)
 - `publication_date_diff`: Source publication date minus target publication date
-- `common_authors`: Number of common authors in source and target authors
+- `common_authors`: Number of common authors in source and in target
 - `authors_collaboration`: Number of pairs of authors from source and target papers 
 that have collaborated.
 - `collaboration_min_distance`: Minimum distance in the collaboration graph between authors from 
