@@ -4,6 +4,7 @@ from features.title import CleanTitle, TitleOverlapping
 from features.date import PublicationDateDiff
 from features.collaboration import CollaborationDistance, CollaborationFeatures
 from features.papers_graph import ExtractGraphPapersFeatures
+from features.journal import ExtractJournalFeatures
 
 """
 This code aims to extract features from train data
@@ -20,7 +21,8 @@ pipeline = [
     ExtractAuthorsList(),
     CollaborationDistance(),
     CollaborationFeatures(),
-    ExtractGraphPapersFeatures()
+    ExtractGraphPapersFeatures(),
+    ExtractJournalFeatures()
 ]
 
 for task in pipeline:

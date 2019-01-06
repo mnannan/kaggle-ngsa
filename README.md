@@ -29,7 +29,7 @@ directory.
 
 # Features
 
-## Final
+## Training features
 - `title_overlap`: number of common words in both titles (on clean titles)
 - `publication_date_diff`: Source publication date minus target publication date
 - `common_authors`: Number of common authors in source and in target
@@ -50,8 +50,9 @@ papers graph.
 - `target_paper_citations`: Number of papers that have cited target paper.
 - `source_number_of_papers_cited`: Number of papers that source has cited.
 - `target_number_of_papers_cited`: Number of papers that target has cited.
+- `same_journal`: Boolean that tells whether source and target belong to the same journal. 
 
-## Intermediate
+## Intermediate features
 - `source_authors_list`: list of authors extracted with regex
 - `target_authors_list`: same as `source_authors_list`
 - `collaboration_paths`: distance between source authors and target authors in the collaboration 
