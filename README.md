@@ -44,7 +44,12 @@ paper in
 - `writer_collaborators`: Number of collaborators of the writer
 - `writer_collaboration_min_distance`: Minimum distance between writer and collaborators.
 - `writer_collaboration_mean_distance`: Mean distance between writer and collaborators.
-
+- `source_target_common_neighbors`: Number of common neighbors between target and source in 
+papers graph.
+- `source_paper_citations`: Number of papers that have cited source paper.
+- `target_paper_citations`: Number of papers that have cited target paper.
+- `source_number_of_papers_cited`: Number of papers that source has cited.
+- `target_number_of_papers_cited`: Number of papers that target has cited.
 
 ## Intermediate
 - `source_authors_list`: list of authors extracted with regex
@@ -61,3 +66,8 @@ collaboration graph
 
 This graph has been built with authors of each paper. 
 Nodes are authors and *u* and *v* are connected if *u* and *v* have co writen a paper.
+
+## Papers graph
+
+This graph has been built with papers relations. It's a non directed graph.
+Nodes are papers and u and v are connected if *u* has cited *v* or *v* has cited *u*
