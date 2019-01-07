@@ -1,5 +1,6 @@
 from typing import Tuple, Dict
 
+import numpy as np
 import pandas as pd
 import igraph
 
@@ -16,6 +17,7 @@ class ExtractGraphPapersFeatures:
     def __init__(self):
         self.graph = None
         self.nodes_mapping = None
+        self.df_connected_papers = None
 
     def fit(self, df: pd.DataFrame):
         """
@@ -23,6 +25,7 @@ class ExtractGraphPapersFeatures:
         other or vice versa
         """
         self.graph, self.nodes_mapping = create_paper_graph(df)
+        self.df_connected_papers = df[df.category == 1][['source_id', 'target_id']]
 
     def transform(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -43,7 +46,7 @@ class ExtractGraphPapersFeatures:
 
         df['source_target_common_neighbors'] = pd.Series(common_neighbors, index=df.index)
 
-        paper_citations = df[df.category == 1].target_id.value_counts().rename(
+        paper_citations = self.df_connected_papers.target_id.value_counts().rename(
             'paper_citations')
         df = df.merge(paper_citations.to_frame(), how='left', right_index=True,
                       left_on='source_id')
@@ -55,7 +58,7 @@ class ExtractGraphPapersFeatures:
             'paper_citations_target': 'target_paper_citations'
         })
 
-        number_of_papers_cited = df[df.category == 1].source_id.value_counts().rename(
+        number_of_papers_cited = self.df_connected_papers.source_id.value_counts().rename(
             'number_of_papers_cited')
         df = df.merge(number_of_papers_cited.to_frame(), how='left', right_index=True,
                       left_on='source_id')

@@ -10,7 +10,7 @@ class CleanTitle:
 
     def transform(self, df):
         df['source_title'] = df.source_title.apply(clean_string)
-        df['target_title'] = df.source_title.apply(clean_string)
+        df['target_title'] = df.target_title.apply(clean_string)
         return df
 
 

@@ -18,12 +18,11 @@ class CollaborationDistance:
         self.distances_matrix = None
 
     def fit(self, df):
-        pass
+        self.collaboration_graph, self.authors_mapping = create_collaboration_graph(df)
+        self.distances_matrix = extract_distances_matrix(self.collaboration_graph)
 
     def transform(self, df):
 
-        self.collaboration_graph, self.authors_mapping = create_collaboration_graph(df)
-        self.distances_matrix = extract_distances_matrix(self.collaboration_graph)
         authors_list = \
             df.source_authors_list.apply(lambda x: [x] if x is not None else None) + \
             df.target_authors_list.apply(lambda x: [x] if x is not None else None)
@@ -159,7 +158,10 @@ def create_collaboration_graph(df: pd.DataFrame) -> Tuple[igraph.Graph, Dict]:
     for author_1, author_2 in zip(collaboration.author_1, collaboration.author_2):
         collaboration_edges.append((authors_mapping[author_1], authors_mapping[author_2]))
 
-    return igraph.Graph(collaboration_edges), authors_mapping
+    collaboration_graph = igraph.Graph()
+    collaboration_graph.add_vertices(len(authors_mapping))
+    collaboration_graph.add_edges(collaboration_edges)
+    return collaboration_graph, authors_mapping
 
 
 def extract_distances_matrix(graph: igraph.Graph) -> np.matrix:

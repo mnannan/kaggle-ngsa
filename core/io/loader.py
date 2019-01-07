@@ -13,7 +13,7 @@ def load_data(dataset: str, data_dir: str ='./data/') -> pd.DataFrame:
     :return:
     """
     read_args = {
-        'node_information':{
+        'node_information': {
             'names': ['id', 'publication_date', 'title', 'authors', 'journal', 'abstract'],
             'index_col': 'id'
         },
@@ -22,7 +22,7 @@ def load_data(dataset: str, data_dir: str ='./data/') -> pd.DataFrame:
             'sep': ' ',
         },
         'test':{
-            'names':['source_id', 'target_id'],
+            'names': ['source_id', 'target_id'],
             'sep': ' ',
         }
     }
@@ -49,11 +49,11 @@ def merge_node_information(dataset: pd.DataFrame, node_information: pd.DataFrame
     for column in node_information.columns:
         for origin in ['source', 'target']:
             serie = node_information[column].rename(f'{origin}_{column}').to_frame()
-            dataset = dataset.merge(serie, left_on=f'{origin}_id', right_index=True)
+            dataset = dataset.merge(serie, left_on=f'{origin}_id', right_index=True, how='left')
     return dataset
 
 
-def get_data_with_node_information(dataset: pd.DataFrame, data_dir='./data/') -> pd.DataFrame:
+def get_data_with_node_information(dataset: str, data_dir='./data/') -> pd.DataFrame:
     """
     Same as load_data but return the dataset with node_information
     e.g: get_data_with_node_information('train') will return train dataset with node_information

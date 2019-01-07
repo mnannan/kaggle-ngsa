@@ -19,4 +19,4 @@ def clean_string(string: str) -> str:
 
 def overlap(string1: str, string2: str) -> int:
     """ Given two strings returns the number of common words"""
-    return len(set(string1).intersection(set(string2)))
+    return len(set(string1.split()).intersection(set(string2.split())))

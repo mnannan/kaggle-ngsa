@@ -42,6 +42,5 @@ def cross_validation(Model, model_args: Dict, x: np.ndarray, y: np.ndarray,
 
         print(f'Epoch {i}')
         print(f'f1: {f1_list[i-1]}')
-        print(f'accuracy :{f1_list[i-1]}')
         i += 1
     return y_pred, f1_list
