@@ -26,7 +26,6 @@ pip install -r requirements.txt
 Download data on [kaggle competition](https://www.kaggle.com/c/ngsa-w19) and move data in `data` 
 directory.
 
-
 # Features
 
 ## Training features
@@ -69,9 +68,11 @@ and target paper in authors graph
 paper and target paper in authors graph
 
 ### NLP Features
-- `title_cosine_similarity`: 
-- `abstract_cosine_similarity`:
-- `journal_cosine_similarity`:
+- `title_cosine_similarity`: tfidf of the title and cosimilarity between source and target title
+- `abstract_cosine_similarity`: tfidf of the abstract and cosimilarity between source and target 
+abstract
+- `journal_cosine_similarity`: tfidf of the journal and cosimilarity between source and target 
+journal
 
 ## Intermediate features
 - `source_authors_list`: list of authors extracted with regex
@@ -80,7 +81,6 @@ paper and target paper in authors graph
 graph
 - `writer_collaboration_distance`: distance between source writer and target authors in the 
 collaboration graph
-
 
 # Graph
 
@@ -94,11 +94,10 @@ Nodes are authors and *u* and *v* are connected if *u* and *v* have co writen a 
 This graph has been built with papers relations. It's a non directed graph.
 Nodes are papers and u and v are connected if *u* has cited *v* or *v* has cited *u*
 
-
 # TODO
-Test processing with NLP + tune tfidf
-Add common words in journal 
-page rank
-communities
-tune models
-Select models
+- Test processing with NLP + tune tfidf
+- Add common words in journal 
+- Page rank
+- Communities
+- Tune models
+- Select models
