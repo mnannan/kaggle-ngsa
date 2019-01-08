@@ -5,8 +5,10 @@ import pandas as pd
 import igraph
 from sklearn.utils.extmath import cartesian
 
+from features.papers_graph import extract_neighborhood_based_metrics
 
-class CollaborationDistance:
+
+class CollaborationGraphFeatures:
     """
     This extracts the following features:
     - collaboration_distance
@@ -38,6 +40,23 @@ class CollaborationDistance:
         df['writer_collaboration_distance'] = writer_target_authors_list.apply(
             lambda x: extract_distances_series(x, self.distances_matrix, self.authors_mapping)
         )
+
+        # Neighborhood metrics
+        metrics = extract_crossed_neighborhood_metrics(
+            df['source_authors_list'], df['target_authors_list'], self.collaboration_graph,
+            self.authors_mapping)
+
+        metrics = pd.DataFrame(metrics, index=df.index)
+
+        columns_mapping = {
+            'adamic_adar': 'authors_adamic_adar',
+            'common_neighbors': 'authors_common_neighbors',
+            'jaccard_coefficient': 'authors_jaccard_coefficient',
+            'preferential_attachment': 'authors_preferential_attachment'
+        }
+        metrics = metrics.rename(columns_mapping, axis='columns')
+        df = pd.concat([df, metrics], axis='columns')
+
         return df
 
 
@@ -52,6 +71,10 @@ class CollaborationFeatures:
     - writer_collaborators
     - writer_collaboration_min_distance
     - writer_collaboration_mean_distance
+    - max_authors_adamic_adar
+    - max_authors_common_neighbors
+    - max_authors_jaccard_coefficient
+    - max_authors_preferential_attachment
     """
     def fit(self, df):
         pass
@@ -81,6 +104,15 @@ class CollaborationFeatures:
                 lambda x: np.mean(x) if x is not None else np.inf
             )
 
+        authors_neighborhood_metrics = [
+            'authors_adamic_adar', 'authors_common_neighbors', 'authors_jaccard_coefficient',
+            'authors_preferential_attachment'
+        ]
+
+        for neighborhood_metric in authors_neighborhood_metrics:
+            df['max_' + neighborhood_metric] = df[neighborhood_metric].apply(
+                lambda x: np.max(x) if isinstance(x, list) and len(x) > 0 else None
+            )
         return df
 
 
@@ -202,3 +234,40 @@ def number_of_occurrences(l: List[int], x: int) -> int:
             if element == x:
                 cpt += 1
     return cpt
+
+
+def extract_crossed_neighborhood_metrics(
+        authors1_lists: pd.Series, authors2_lists: pd.Series, graph: igraph.Graph,
+        nodes_mapping: Dict
+) -> Dict:
+    """
+    """
+    metrics = {
+        'adamic_adar': [],
+        'common_neighbors': [],
+        'jaccard_coefficient': [],
+        'preferential_attachment': []
+    }
+
+    for authors1_list, authors2_list in zip(authors1_lists.values, authors2_lists.values):
+        if isinstance(authors1_list, list) and isinstance(authors2_list, list):
+            mapped_nodes_1 = np.array([nodes_mapping[node] for node in authors1_list])
+            mapped_nodes_2 = np.array([nodes_mapping[node] for node in authors2_list])
+            crossed_metrics = {
+                'adamic_adar': [],
+                'common_neighbors': [],
+                'jaccard_coefficient': [],
+                'preferential_attachment': []
+            }
+            for node_1 in mapped_nodes_1:
+                for node_2 in mapped_nodes_2:
+                    if node_1 != node_2:
+                        data = extract_neighborhood_based_metrics(node_1, node_2, graph)
+                        for metric in metrics:
+                            crossed_metrics[metric].append(data[metric])
+            for metric in metrics:
+                metrics[metric].append(crossed_metrics[metric])
+        else:
+            for metric in metrics:
+                metrics[metric].append(None)
+    return metrics

@@ -8,11 +8,14 @@ import igraph
 class ExtractGraphPapersFeatures:
     """
     This class add the following features:
-    - source_target_common_neighbors
     - source_paper_citations
     - target_paper_citations
     - source_number_of_papers_cited
     - target_number_of_papers_cited
+    - adamic_adar
+    - common_neighbors
+    - jaccard_coefficient
+    - preferential_attachment
     """
     def __init__(self):
         self.graph = None
@@ -34,20 +37,17 @@ class ExtractGraphPapersFeatures:
         - source_id
         - target_id
         """
-        neighbors = {}
-        for i in range(self.graph.vcount()):
-            neighbors[i] = set(self.graph.neighbors(i))
 
-        common_neighbors = []
-        for source_id, target_id in zip(df.source_id.values, df.target_id.values):
-            source_id = self.nodes_mapping[source_id]
-            target_id = self.nodes_mapping[target_id]
-            common_neighbors.append(len(neighbors[source_id].intersection(neighbors[target_id])))
+        # Compute neighborhood_based metrics
+        metrics = neighborhood_based_metrics(df.source_id, df.target_id, self.graph,
+                                             self.nodes_mapping)
 
-        df['source_target_common_neighbors'] = pd.Series(common_neighbors, index=df.index)
+        metrics = pd.DataFrame(metrics, index=df.index)
 
-        paper_citations = self.df_connected_papers.target_id.value_counts().rename(
-            'paper_citations')
+        df = pd.concat([df, metrics], axis='columns')
+
+        paper_citations = \
+            self.df_connected_papers.target_id.value_counts().rename('paper_citations')
         df = df.merge(paper_citations.to_frame(), how='left', right_index=True,
                       left_on='source_id')
 
@@ -92,3 +92,56 @@ def create_paper_graph(df: pd.DataFrame) -> Tuple[igraph.Graph, Dict]:
         edges.append((nodes_mapping[source_id], nodes_mapping[target_id]))
     graph = igraph.Graph(edges)
     return graph, nodes_mapping
+
+
+def neighborhood_based_metrics(
+        source_id: pd.Series, target_id: pd.Series, graph: igraph.Graph, nodes_mapping: Dict
+) -> Dict:
+    metrics = {
+        'adamic_adar': [],
+        'common_neighbors': [],
+        'jaccard_coefficient': [],
+        'preferential_attachment': []
+    }
+    for source_id, target_id in zip(source_id.values, target_id.values):
+        source_id = nodes_mapping[source_id]
+        target_id = nodes_mapping[target_id]
+        data = extract_neighborhood_based_metrics(source_id, target_id, graph)
+        for metric in metrics:
+            metrics[metric].append(data[metric])
+    return metrics
+
+
+def extract_neighborhood_based_metrics(
+        source_id: int, target_id: int, graph: igraph.Graph
+) -> Dict:
+    """
+    Given two nodes and a graph compute neighborhood metrics
+    :param source_id: Source node
+    :param target_id: Target node
+    :param graph: graph that contains node
+    :return: adamic adar , common neighbors, jaccard coefficient and preferential attachment
+    """
+    metrics = {}
+    source_neighbors = set(graph.neighbors(source_id))
+    target_neighbors = set(graph.neighbors(target_id))
+    neighbors_intersection = source_neighbors.intersection(target_neighbors)
+    neighbors_union = source_neighbors.union(target_neighbors)
+
+    # Extract adamic_adar
+    adamic_adar = 0.0
+    for neighbor in neighbors_intersection:
+        adamic_adar += 1 / np.log(len(graph.neighbors(neighbor)))
+    metrics['adamic_adar'] = adamic_adar
+    # common_neighbors
+    metrics['common_neighbors'] = len(neighbors_intersection)
+
+    # Jaccard coefficient
+    if len(neighbors_union) > 0:
+        metrics['jaccard_coefficient'] = len(neighbors_intersection) / len(neighbors_union)
+    else:
+        metrics['jaccard_coefficient'] = 0
+
+    # Preferential attachment
+    metrics['preferential_attachment'] = len(source_neighbors) * len(target_neighbors)
+    return metrics

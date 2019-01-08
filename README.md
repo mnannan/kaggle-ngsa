@@ -30,9 +30,12 @@ directory.
 # Features
 
 ## Training features
+
+### Basic features
 - `title_overlap`: number of common words in both titles (on clean titles)
 - `publication_date_diff`: Source publication date minus target publication date
 - `common_authors`: Number of common authors in source and in target
+### Graph Features
 - `authors_collaboration`: Number of pairs of authors from source and target papers 
 that have collaborated.
 - `collaboration_min_distance`: Minimum distance in the collaboration graph between authors from 
@@ -44,13 +47,31 @@ paper in
 - `writer_collaborators`: Number of collaborators of the writer
 - `writer_collaboration_min_distance`: Minimum distance between writer and collaborators.
 - `writer_collaboration_mean_distance`: Mean distance between writer and collaborators.
-- `source_target_common_neighbors`: Number of common neighbors between target and source in 
+- `common_neighbors`: Number of common neighbors between target and source in 
 papers graph.
 - `source_paper_citations`: Number of papers that have cited source paper.
 - `target_paper_citations`: Number of papers that have cited target paper.
 - `source_number_of_papers_cited`: Number of papers that source has cited.
-- `target_number_of_papers_cited`: Number of papers that target has cited.
+- `target_number_of_pape`rs_cited`: Number of papers that target has cited.
 - `same_journal`: Boolean that tells whether source and target belong to the same journal. 
+- `adamic_adar`: Adamic adar index between source and target papers in papers graph
+- `jaccard_coefficient`:Jaccard coefficient between source and target papers in papers
+ graph
+- `preferential_attachment`: Preferential attachment between target and source papers in papers graph
+- `max_authors_adamic_adar`: Maximum adamic adar between authors from source paper and target 
+paper in authors graph
+- `max_authors_common_neighbors`:Maximum number of common neighbors between authors from 
+source paper and target 
+paper in authors graph
+- `max_authors_jaccard_coefficient`:Maximum Jaccard coefficient between authors from source paper 
+and target paper in authors graph
+- `max_authors_preferential_attachment`:Maximum Preferential attachment between authors from source 
+paper and target paper in authors graph
+
+### NLP Features
+- `title_cosine_similarity`: 
+- `abstract_cosine_similarity`:
+- `journal_cosine_similarity`:
 
 ## Intermediate features
 - `source_authors_list`: list of authors extracted with regex
@@ -72,3 +93,12 @@ Nodes are authors and *u* and *v* are connected if *u* and *v* have co writen a 
 
 This graph has been built with papers relations. It's a non directed graph.
 Nodes are papers and u and v are connected if *u* has cited *v* or *v* has cited *u*
+
+
+# TODO
+Test processing with NLP + tune tfidf
+Add common words in journal 
+page rank
+communities
+tune models
+Select models
