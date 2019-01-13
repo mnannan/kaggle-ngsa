@@ -16,6 +16,7 @@ The python file `main.py` file generates a submission that has a f1 of 0.97023 o
 # Installation
 
 ### Requirements 
+- Python 3.6
 
 To install requirements run 
 ```
