@@ -11,7 +11,8 @@ another paper given:
      - Authors
      - Abstract
      - Journal 
-        
+      
+The main.py file generate a submission that has 0.97023 of f1 on the leaderboard
 # Installation
 
 ### Requirements 
@@ -26,6 +27,38 @@ pip install -r requirements.txt
 Download data on [kaggle competition](https://www.kaggle.com/c/ngsa-w19) and move data in `data` 
 directory.
 
+
+# Running the submission
+
+To generate the submission you just need to run the following command from the project root
+```
+python main.py
+```
+This will output a csv `submission.csv`, print cross validation results and plot features importance
+
+
+# Project structure
+
+## Directories
+
+### features/
+Contains all the .py files to generate the features
+
+### models/
+Contains cross validation util
+
+### plot/
+Contains utils used during data analysis
+
+### core/
+Utils to load datasets
+
+
+## Features extractors
+
+We used scikit pipeline style to design our features extractors which means that they have two 
+methods one `fit` method in order to build graph for example and `transform` method that given a 
+pandas dataframe returns the input pandas dataframe with the extracted features.
 # Features
 
 ## Training features
@@ -66,13 +99,20 @@ paper in authors graph
 and target paper in authors graph
 - `max_authors_preferential_attachment`:Maximum Preferential attachment between authors from source 
 paper and target paper in authors graph
+- `pagerank_source`: Pagerank of the source paper
+- `pagerank_target`: Pagerank of the target paper
 
 ### NLP Features
-- `title_cosine_similarity`: tfidf of the title and cosimilarity between source and target title
-- `abstract_cosine_similarity`: tfidf of the abstract and cosimilarity between source and target 
-abstract
-- `journal_cosine_similarity`: tfidf of the journal and cosimilarity between source and target 
-journal
+- `title_cosine_similarity`: cosine similarity between the tfidf of the target title and the 
+source title. 
+- `abstract_cosine_similarity`: cosine similarity between the tfidf of the target abstract and the 
+source abstract. 
+- `journal_cosine_similarity`: cosine similarity between the tfidf of the target journal and the 
+source journal. 
+- `source_abstract_target_title_cosimilarity`: cosine similarity of the tfidf of the source 
+abstract and the target title.
+- `source_title_target_abstract_cosimilarity`: cosine similarity of the tfidf of the source 
+title and the target abstract.
 
 ## Intermediate features
 - `source_authors_list`: list of authors extracted with regex
@@ -82,7 +122,7 @@ graph
 - `writer_collaboration_distance`: distance between source writer and target authors in the 
 collaboration graph
 
-# Graph
+# Graph built
 
 ## Collaboration graph
 
@@ -93,11 +133,3 @@ Nodes are authors and *u* and *v* are connected if *u* and *v* have co writen a 
 
 This graph has been built with papers relations. It's a non directed graph.
 Nodes are papers and u and v are connected if *u* has cited *v* or *v* has cited *u*
-
-# TODO
-- Test processing with NLP + tune tfidf
-- Add common words in journal 
-- Page rank
-- Communities
-- Tune models
-- Select models

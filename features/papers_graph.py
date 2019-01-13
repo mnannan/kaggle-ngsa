@@ -16,11 +16,15 @@ class ExtractGraphPapersFeatures:
     - common_neighbors
     - jaccard_coefficient
     - preferential_attachment
+    - pagerank_source
+    - pagerank_target
+
     """
     def __init__(self):
         self.graph = None
         self.nodes_mapping = None
         self.df_connected_papers = None
+        self.pagerank = None
 
     def fit(self, df: pd.DataFrame):
         """
@@ -29,6 +33,11 @@ class ExtractGraphPapersFeatures:
         """
         self.graph, self.nodes_mapping = create_paper_graph(df)
         self.df_connected_papers = df[df.category == 1][['source_id', 'target_id']]
+
+        self.pagerank = pd.Series(
+            self.graph.pagerank(),
+            index=list(paper_id for paper_id in self.nodes_mapping.keys())
+        ).rename('pagerank')
 
     def transform(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -71,6 +80,10 @@ class ExtractGraphPapersFeatures:
             'number_of_papers_cited_target': 'target_number_of_papers_cited'
         })
 
+        df = df.merge(self.pagerank.to_frame(), how='left', right_index=True,
+                      left_on='source_id') \
+               .merge(self.pagerank.to_frame(), how='left', right_index=True, left_on='target_id',
+                      suffixes=('_source', '_target'))
         return df
 
 
