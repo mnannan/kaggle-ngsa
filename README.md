@@ -2,7 +2,7 @@
 
 https://www.kaggle.com/c/ngsa-w19
 
-This projects aims to solve kaggle competition about predicting whether one paper will quote 
+This projects aims to solve kaggle competition about predicting whether one paper will cite
 another paper given:
 -   A graph of papers
 -   For each paper:
@@ -12,7 +12,7 @@ another paper given:
      - Abstract
      - Journal 
       
-The main.py file generate a submission that has 0.97023 of f1 on the leaderboard
+The python file `main.py` file generates a submission that has a f1 of 0.97023 on the leaderboard
 # Installation
 
 ### Requirements 
@@ -24,7 +24,7 @@ pip install -r requirements.txt
 
 ### Data
 
-Download data on [kaggle competition](https://www.kaggle.com/c/ngsa-w19) and move data in `data` 
+Download data on [the kaggle competition](https://www.kaggle.com/c/ngsa-w19) and move data in `data` 
 directory.
 
 
@@ -45,7 +45,7 @@ This will output a csv `submission.csv`, print cross validation results and plot
 Contains all the .py files to generate the features
 
 ### models/
-Contains cross validation util
+Contains a cross validation util
 
 ### plot/
 Contains utils used during data analysis
